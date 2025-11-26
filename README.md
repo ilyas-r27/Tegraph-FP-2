@@ -22,12 +22,6 @@ The code works on the station network shown in the visualization:
 Each black line in the picture is a **track segment** between two stations, and the
 number next to it is the **distance in kilometers** (edge weight).
 
-You can place the picture in the same folder and reference it like this:
-
-```markdown
-![Station Map](visualisation.png)
-```
-
 ---
 
 ## 1. How the Map Is Translated Into Code
