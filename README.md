@@ -135,13 +135,34 @@ def dijkstra(graph, start_node_index):
         # 2. Mark that node as visited
         visited[u] = True
 ```
+## Overview
 
-1. Among all **unvisited** stations, it chooses the one with the smallest tentative distance.  
-   This is like saying:  
-   > “From all stations we already know a distance for, which one is the closest so far?”
-2. If no such station exists (`u == -1`), the algorithm stops.
-3. That station `u` is now considered **final** (shortest distance to `u` is fixed).
+This function is the core of Dijkstra’s algorithm that works on a **graph represented as an adjacency matrix** and a given **start node** (start station). It computes the shortest path distances from the start node to all other nodes.
 
+---
+
+## Variable Initialization
+
+- `num_nodes = len(graph)`  
+  Counts how many nodes (stations) there are in the graph.
+
+- `distances = [inf] * num_nodes`  
+  Creates an array that stores the **current shortest known distance** from the start node to every other node.  
+  At the beginning, all values are set to infinity (`inf`) because no paths are known yet.
+
+- `visited = [False] * num_nodes`  
+  Keeps track of which nodes have been **“finalized”** by the algorithm (i.e., nodes whose shortest distance has already been confirmed).
+
+- `previous_nodes = [-1] * num_nodes`  
+  Stores the **previous node** on the shortest path for each node.  
+  This is later used to reconstruct the actual path (by backtracking from the destination back to the start).
+
+- `distances[start_node_index] = 0`  
+  The distance from the start node to itself is **0**, so this becomes our starting point.
+
+  
+
+---
 #### Relaxation Step (Updating Neighbors)
 
 ```python
