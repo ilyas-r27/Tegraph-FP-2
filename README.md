@@ -1,3 +1,12 @@
+| Name           | NRP        | Kelas     |
+| ---            | ---        | ----------|
+| Kenzie Maheswara | 5025241001 | IUP |
+| Palpal Yalmialam | 5025241002 | IUP |
+| Muhammad Ilyas Rusdi | 5025241007 | IUP |
+| M. Arifathan Mahardika | 5025241013 | IUP |
+
+
+
 <img width="902" height="509" alt="image" src="https://github.com/user-attachments/assets/4527e28e-77c9-471f-abe6-db14de46e760" />
 
 
