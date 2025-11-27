@@ -160,6 +160,8 @@ This function is the core of Dijkstra’s algorithm that works on a **graph repr
 - `distances[start_node_index] = 0`  
   The distance from the start node to itself is **0**, so this becomes our starting point.
 
+## Main Loop Logic
+
 ### 1. Iteration Over All Nodes
 
 The outer loop `for _ in range(num_nodes):` runs up to `num_nodes` times.  
@@ -176,9 +178,24 @@ This is done by scanning all nodes and keeping track of the smallest distance fo
 
 If, after checking all nodes, no suitable node is found (`u == -1`), it means **there are no more reachable unvisited nodes**. In that case, the algorithm stops early with `break`.
 
-  
+### 3. Finalizing Node `u`
+
+Once node `u` is selected, we execute:
+
+```python
+visited[u] = True
+```
+
+This marks node `u` as **visited/finalized**.  
+At this point, the shortest distance to `u` is considered **fixed**, and in the next part of the algorithm (not shown here), we would:
+
+- Look at all neighbors of `u`, and  
+- Try to **relax/update** their distances using the path that goes through `u`.
+
+This is how Dijkstra’s algorithm gradually expands the set of nodes whose shortest distances from the start node are known with certainty.
 
 ---
+
 #### Relaxation Step (Updating Neighbors)
 
 ```python
