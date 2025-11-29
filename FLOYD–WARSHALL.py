@@ -1,81 +1,86 @@
 import math
 
-#   NODE DEFINITIONS
 
+#   STATION LIST (26 stations)
 
 stations = [
-    "Gubeng",      # 0
-    "Wonokromo",   # 1
-    "Sidoarjo",    # 2
-    "Bangil",      # 3
-    "Lawang",      # 4
-    "Malang",      # 5
-    "Mojokerto",   # 6
-    "Kertosono",   # 7
-    "Kediri",      # 8
-    "Blitar"       # 9
+    "SGU", "WO", "SDA", "BG", "LW", "ML", "MR", "KTS", "KD", "BL",
+    "CN", "PWT", "KRO", "KLG", "YGY", "SOL", "SRW",
+    "MDN", "NGK", "SMG", "PK", "TGL", "CKR", "PSE", "BDG", "KTG"
 ]
 
 n = len(stations)
-
 INF = float('inf')
 
-
-#   INITIAL DISTANCE MATRIX
-
-# Create NxN matrix initialized to INF
+# initialize distance matrix
 dist = [[INF] * n for _ in range(n)]
-next_node = [[None] * n for _ in range(n)]  # for path reconstruction
+next_node = [[None] * n for _ in range(n)]
 
-# Distance to itself = 0
+# distance to itself = 0
 for i in range(n):
     dist[i][i] = 0
     next_node[i][i] = i
 
 
-#   ADD EDGES (from your diagram)
-
+#   ADD EDGES BASED ON DATASET
 edges = [
-    (0, 1, 5.9),    # Gubeng - Wonokromo
-    (1, 2, 17.6),   # Wonokromo - Sidoarjo
-    (2, 3, 21.5),   # Sidoarjo - Bangil
-    (3, 4, 40.5),   # Bangil - Lawang
-    (4, 5, 18.6),   # Lawang - Malang
-    
-    (1, 6, 38),     # Wonokromo - Mojokerto
-    (6, 7, 42.9),   # Mojokerto - Kertosono
-    (7, 8, 25.2),   # Kertosono - Kediri
-    (8, 9, 54.8),   # Kediri - Blitar
-    (9, 5, 59.2),   # Blitar - Malang
+    # East Java segment (your previous data)
+    ("SGU", "WO", 5.8),
+    ("WO", "SDA", 17.6),
+    ("SDA", "BG", 21.5),
+    ("BG",  "LW", 40.5),
+    ("LW",  "ML", 18.6),
+    ("WO",  "MR", 38),
+    ("MR",  "KTS", 42.9),
+    ("KTS", "KD", 25.2),
+    ("KD",  "BL", 54.8),
+    ("BL",  "ML", 58.2),
+
+    # Central + West Java region (from your large matrix)
+    ("CN", "PWT", 100.8),
+    ("PWT", "KRO", 40.1),
+    ("KRO", "KLG", 60.5),
+    ("KLG", "YGY", 50.2),
+    ("YGY", "SOL", 60.4),
+    ("SOL", "SRW", 45.3),
+    ("SRW", "MDN", 105.1),
+    ("MDN", "NGK", 40.9),
+    ("NGK", "SMG", 110.3),
+    ("SMG", "PK", 60.8),
+    ("PK", "TGL", 45.5),
+    ("TGL", "CKR", 60.3),
+    ("CKR", "PSE", 143.2),
+    ("PSE", "BDG", 480.3),
+
+    # Long-distance connection
+    ("KTG", "SGU", 300.6)
 ]
 
-# Since all connections are bidirectional, fill both ways
-for (u, v, w) in edges:
-    dist[u][v] = w
-    dist[v][u] = w
-    next_node[u][v] = v
-    next_node[v][u] = u
+# fill adjacency matrix
+for (a, b, w) in edges:
+    i = stations.index(a)
+    j = stations.index(b)
+    dist[i][j] = w
+    dist[j][i] = w
+    next_node[i][j] = j
+    next_node[j][i] = i
 
 
 #   FLOYD–WARSHALL ALGORITHM
-
 
 for k in range(n):
     for i in range(n):
         for j in range(n):
             if dist[i][k] + dist[k][j] < dist[i][j]:
                 dist[i][j] = dist[i][k] + dist[k][j]
-                next_node[i][j] = next_node[i][k]   # update next hop
-
+                next_node[i][j] = next_node[i][k]
 
 
 #   PATH RECONSTRUCTION
 
-
 def get_path(start, end):
     if next_node[start][end] is None:
         return None
-    
     path = [start]
     while start != end:
         start = next_node[start][end]
@@ -83,15 +88,15 @@ def get_path(start, end):
     return path
 
 
-#   TEST
+#   TEST: SGU → BDG (example)
 
 
-start = 0  # Gubeng
-end = 5    # Malang
+start = stations.index("SGU")
+end = stations.index("BDG")
 
-path_indices = get_path(start, end)
-path_names = [stations[i] for i in path_indices]
+path_idx = get_path(start, end)
+path_names = [stations[i] for i in path_idx]
 
-print("Shortest path using Floyd–Warshall:")
+print("Shortest path SGU -> BDG:")
 print(" -> ".join(path_names))
-print("Total distance:", dist[start][end])
+print("Distance:", dist[start][end])
