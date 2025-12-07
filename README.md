@@ -59,18 +59,34 @@ So, whenever the algorithm says “node 0”, it actually means **St. Gubeng**.
 inf = float('inf')
 
 graph = [
-    #      SGU,   WO,  SDA,   BG,   LW,   ML,   MR,  KTS,   KD,   BL
-    [      0,  5.8,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf],  # SGU
-    [    5.8,    0, 17.6,  inf,  inf,  inf, 38.0,  inf,  inf,  inf],  # WO
-    [    inf, 17.6,    0, 21.5,  inf,  inf,  inf,  inf,  inf,  inf],  # SDA
-    [    inf,  inf, 21.5,    0, 40.5,  inf,  inf,  inf,  inf,  inf],  # BG
-    [    inf,  inf,  inf, 40.5,    0, 18.6,  inf,  inf,  inf,  inf],  # LW
-    [    inf,  inf,  inf,  inf, 18.6,    0,  inf,  inf,  inf, 58.2],  # ML
-    [    inf, 38.0,  inf,  inf,  inf,  inf,    0, 42.9,  inf,  inf],  # MR
-    [    inf,  inf,  inf,  inf,  inf,  inf, 42.9,    0, 25.2,  inf],  # KTS
-    [    inf,  inf,  inf,  inf,  inf,  inf,  inf, 25.2,    0, 54.8],  # KD
-    [    inf,  inf,  inf,  inf,  inf, 58.2,  inf,  inf, 54.8,    0]   # BL  
+    [ 0.0,  5.8,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf, 300.6], # 0 SGU
+    [ 5.8,  0.0, 17.6,  inf,  inf,  inf, 38.0,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf], # 1 WO
+    [ inf, 17.6,  0.0, 21.5,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf], # 2 SDA
+    [ inf,  inf, 21.5,  0.0, 40.5,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf], # 3 BG
+    [ inf,  inf,  inf, 40.5,  0.0, 18.6,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf], # 4 LW
+    [ inf,  inf,  inf,  inf, 18.6,  0.0,  inf,  inf,  inf, 58.2,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf], # 5 ML
+    [ inf, 38.0,  inf,  inf,  inf,  inf,  0.0, 42.9,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf], # 6 MR
+    [ inf,  inf,  inf,  inf,  inf,  inf, 42.9,  0.0, 25.2,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf, 30.1,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf], # 7 KTS
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf, 25.2,  0.0, 54.8,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf], # 8 KD
+    [ inf,  inf,  inf,  inf,  inf, 58.2,  inf,  inf, 54.8,  0.0,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf], # 9 BL
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  0.0, 100.8,  inf,  inf,  inf,  inf,  inf,  inf,  inf, 200.7,  inf,  inf,  inf, 220.5,  inf,  inf], # 10 CN
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf, 100.8,  0.0,  40.1,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf], # 11 PWT
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  40.1,  0.0,  60.5,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf], # 12 KRO
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  60.5,  0.0,  50.2,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf], # 13 KLG
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  50.2,  0.0,  60.4,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf, 480.3,  inf], # 14 YGY
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  60.4,  0.0,  45.3,  inf,  inf, 110.3,  inf,  inf,  inf,  inf,  inf,  inf], # 15 SOL
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  45.3,  0.0, 105.1,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf], # 16 SRW
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf, 30.1,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf, 105.1,  0.0,  40.9,  inf,  inf,  inf,  inf,  inf,  inf,  inf], # 17 MDN
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  40.9,  0.0,  inf,  inf,  inf,  inf,  inf,  inf,  inf], # 18 NGK
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf, 200.7,  inf,  inf,  inf,  inf, 110.3,  inf,  inf,  inf,  0.0,  60.8,  inf,  inf,  inf,  inf,  inf], # 19 SMG
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  60.8,  0.0,  45.5,  inf,  inf,  inf,  inf], # 20 PK
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  45.5,  0.0,  inf,  inf,  inf,  inf], # 21 TGL
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  0.0,  60.3,  inf,  inf], # 22 CKR
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf, 220.5,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  60.3,  0.0, 143.2,  inf], # 23 PSE
+    [ inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf, 480.3,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf, 143.2,  0.0,  inf], # 24 BDG
+    [ 300.6, inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  inf,  0.0]  # 25 KTG
 ]
+
 ```
 
 - `graph[i][j]` = distance from station `nodes[i]` to `nodes[j]`.
