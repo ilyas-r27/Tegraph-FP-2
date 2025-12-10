@@ -66,11 +66,6 @@ nodes = [
 ]
 ```
 
-
-
-- **Index in the list = ID of the station** in all matrices.  
-- For example, in all three codes, `"SOL"` is one element in this list and its index is used as the **start node**.
-
 ---
 
 ### 1.2 Adjacency Matrix (BFS & Dijkstra)
