@@ -10,7 +10,7 @@
 
 
 
-### 1.2 Adjacency Matrix (Track Distances)
+### Adjacency Matrix (Track Distances)
 
 ```python
 inf = float('inf')
