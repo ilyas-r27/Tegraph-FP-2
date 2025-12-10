@@ -13,46 +13,6 @@
 <img width="902" height="509" alt="image" src="https://github.com/user-attachments/assets/4527e28e-77c9-471f-abe6-db14de46e760" />
 
 
-# Shortest Path of Surabaya–Malang Train Stations (Dijkstra)
-
-This project uses **Dijkstra’s Algorithm** to find the shortest distance from  
-**St. Gubeng (SGU)** to all other stations in the railway map.
-
-The code works on the station network shown in the visualization:
-
-- **SGU** – St. Gubeng  
-- **WO** – St. Wonokromo  
-- **SDA** – St. Sidoarjo  
-- **BG** – Bangil  
-- **LW** – St. Lawang  
-- **ML** – St. Malang  
-- **MR** – St. Mojokerto  
-- **KTS** – St. Kertosono  
-- **KD** – St. Kediri  
-- **BL** – St. Blitar  
-
-Each black line in the picture is a **track segment** between two stations, and the
-number next to it is the **distance in kilometers** (edge weight).
-
----
-
-## 1. How the Map Is Translated Into Code
-
-### 1.1 Nodes (Stations)
-
-```python
-nodes = ["SGU", "WO", "SDA", "BG", "LW", "ML", "MR", "KTS", "KD", "BL"]
-```
-
-This list stores all **station codes**.  
-The **index** of each element is the ID of that station in the graph:
-
-- `0 -> SGU`, `1 -> WO`, `2 -> SDA`, …, `9 -> BL`.
-
-So, whenever the algorithm says “node 0”, it actually means **St. Gubeng**.
-
----
-
 ### 1.2 Adjacency Matrix (Track Distances)
 
 ```python
@@ -89,27 +49,273 @@ graph = [
 
 ```
 
-- `graph[i][j]` = distance from station `nodes[i]` to `nodes[j]`.
-- `0` on the diagonal means **distance from a station to itself is 0**.
-- `inf` means **there is no direct track** between those two stations.
-- The numbers (5.8, 17.6, 40.5, etc.) come directly from the map in the visualisation.
-
-Example:
-
-- `graph[0][1] = 5.8`  
-  → distance SGU → WO is 5.8 km (matches the “5.8” label on the picture).
-- `graph[1][6] = 38.0`  
-  → direct track from WO to MR is 38.0 km (vertical line on the left branch).
-- `graph[5][9] = 58.2`  
-  → track from ML to BL is 58.2 km (bottom-right branch).
-
-This matrix is the **“digital version” of your station map**.
+# Code Explanation – BFS, Dijkstra, and Floyd–Warshall  
+*(Based on the Java Station Dataset, starting from Solo – `SOL`)*
 
 ---
 
-## 2. Dijkstra’s Algorithm Function
+## 1. Shared Data Model (Station Dataset)
 
-### 2.1 `dijkstra(graph, start_node_index)`
+All three files use the **same logical dataset**: a railway network in Java with 26 stations.
+
+### 1.1 Station List
+
+In **BFS.py** and **DIJKSTRA.py**:
+
+```python
+nodes = [
+    "SGU", "WO", "SDA", "BG", "LW", "ML", "MR", "KTS", "KD", "BL",
+    "CN", "PWT", "KRO", "KLG", "YGY", "SOL", "SRW", "MDN", "NGK", "SMG",
+    "PK", "TGL", "CKR", "PSE", "BDG", "KTG"
+]
+```
+
+In **FLOYD–WARSHALL.py** the list is named:
+
+```python
+stations = [
+    "SGU", "WO", "SDA", "BG", "LW", "ML", "MR", "KTS", "KD", "BL",
+    "CN", "PWT", "KRO", "KLG", "YGY", "SOL", "SRW",
+    "MDN", "NGK", "SMG", "PK", "TGL", "CKR", "PSE", "BDG", "KTG"
+]
+```
+
+- **Index in the list = ID of the station** in all matrices.  
+- For example, in all three codes, `"SOL"` is one element in this list and its index is used as the **start node**.
+
+---
+
+### 1.2 Adjacency Matrix (BFS & Dijkstra)
+
+In **BFS.py** and **DIJKSTRA.py**:
+
+```python
+inf = float('inf')
+
+# 26 x 26 adjacency matrix
+graph = [
+    # row 0 = SGU, row 1 = WO, ..., row 15 = SOL, etc.
+    [0.0, 5.8, inf, ... ],
+    [5.8, 0.0, 17.6, ... ],
+    ...
+]
+```
+
+- `graph[i][j]` = **distance in km** between `nodes[i]` and `nodes[j]`.
+- `0.0` on the diagonal = distance from a station to itself.
+- `inf` means **there is no direct railway connection** between those two stations.
+- The matrix is **symmetric** (undirected graph):  
+  if `graph[i][j] = 40.5`, then `graph[j][i]` is also `40.5`.
+
+For **BFS**, these weights are ignored (only “is there a connection or not?” matters).  
+For **Dijkstra**, these weights are the **edge costs**.
+
+---
+
+### 1.3 Edge List (Floyd–Warshall)
+
+In **FLOYD–WARSHALL.py**, the same network is defined as an **edge list**:
+
+```python
+INF = float('inf')
+dist      = [[INF] * n for _ in range(n)]
+next_node = [[None] * n for _ in range(n)]
+
+for i in range(n):
+    dist[i][i] = 0
+    next_node[i][i] = i
+
+edges = [
+
+    # EAST JAVA
+    ("SGU", "WO", 5.8),
+    ("WO", "SDA", 17.6),
+    ("SDA", "BG", 21.5),
+    ("BG", "LW", 40.5),
+    ("LW", "ML", 18.6),
+    ("ML", "BL", 58.2),
+
+    ("WO", "MR", 38),
+    ("MR", "KTS", 42.9),
+    ("KTS", "KD", 25.2),
+    ("KD", "BL", 54.8),
+
+    ("SRW", "MDN", 105.1),
+    ("MDN", "NGK", 40.9),
+
+    # CENTRAL JAVA
+    ("CN", "PWT", 100.8),
+    ("CN", "SMG", 200.7),
+    ("PWT", "KRO", 40.1),
+    ("KRO", "KLG", 60.5),
+    ("KLG", "YGY", 50.2),
+    ("YGY", "SOL", 60.4),
+    ("SOL", "SRW", 45.3),
+    ("NGK", "SMG", 110.3),
+    ("SMG", "PK", 60.8),
+    ("PK", "TGL", 45.5),
+
+    # WEST JAVA
+    ("CN", "KTG", 220.5),
+    ("KTG", "CKR", 168.0),
+    ("CKR", "PSE", 26.8),
+    ("PSE", "BDG", 137.1),
+    ("BDG", "KTG", 205.6)
+]
+```
+
+Then each edge is inserted into the matrices:
+
+```python
+for a, b, w in edges:
+    i = stations.index(a)
+    j = stations.index(b)
+    dist[i][j] = w
+    dist[j][i] = w            # undirected
+    next_node[i][j] = j
+    next_node[j][i] = i
+```
+
+So `dist` starts as the **direct distances**, and Floyd–Warshall will turn it into **shortest distances between every pair of stations**.
+
+---
+
+## 2. BFS.py – Breadth-First Search (Minimum Hops)
+
+### 2.1 Purpose
+
+- BFS here is used to find the path from **Solo (`SOL`) to all other stations** that has the **minimum number of stops / edges (hops)**.
+- It **ignores the kilometers** and only cares about connectivity.
+
+---
+
+### 2.2 `bfs(graph, start_node_index)`
+
+```python
+from collections import deque
+
+def bfs(graph, start_node_index):
+    """
+    Mencari jalur dengan JUMLAH STASIUN (Hops) paling sedikit.
+    """
+    num_nodes = len(graph)
+    visited = [False] * num_nodes
+    previous_nodes = [-1] * num_nodes
+
+    queue = deque([start_node_index])
+    visited[start_node_index] = True
+
+    hops = [inf] * num_nodes
+    hops[start_node_index] = 0
+
+    while queue:
+        u = queue.popleft()
+
+        for v in range(num_nodes):
+            if graph[u][v] != inf and graph[u][v] != 0.0 and not visited[v]:
+                visited[v] = True
+                hops[v] = hops[u] + 1
+                previous_nodes[v] = u
+                queue.append(v)
+
+    return hops, previous_nodes
+```
+
+Step-by-step:
+
+- `visited[i]`: whether station `i` has already been discovered.
+- `previous_nodes[i]`: the **parent station** on the BFS tree (used to reconstruct the route).
+- `queue`: BFS frontier, starting from the index of `"SOL"`.
+- `hops[i]`: the **minimum number of edges** from `SOL` to station `i`.
+
+Inside the loop:
+
+- Take station `u` from the queue.
+- Scan all stations `v`:
+  - If `graph[u][v]` is not `inf` and not `0.0`, there is a **direct track** from `u` to `v`.
+  - If `v` has not been visited:
+    - Mark `v` as visited.
+    - Set `hops[v] = hops[u] + 1` (one more hop than `u`).
+    - Set `previous_nodes[v] = u` (we reached `v` from `u`).
+    - Push `v` into the queue.
+
+The result:
+
+- `hops`: minimal number of transfers from Solo to every station.
+- `previous_nodes`: information to reconstruct each path.
+
+---
+
+### 2.3 `get_path_bfs(previous_nodes, node_names, start_index, end_index)`
+
+```python
+def get_path_bfs(previous_nodes, node_names, start_index, end_index):
+    path = []
+    current_index = end_index
+    while current_index != -1:
+        path.append(node_names[current_index])
+        current_index = previous_nodes[current_index]
+
+    path.reverse()
+    if len(path) > 0 and path[0] == node_names[start_index]:
+        return " -> ".join(path)
+    else:
+        return "No path"
+```
+
+- Start from the destination index (`end_index`).
+- Follow `previous_nodes` backwards until `-1` (no parent).
+- Reverse the list to get `start → ... → end`.
+- Returns a string like: `"SOL -> SRW -> MDN -> NGK"`.
+
+---
+
+### 2.4 Main Program
+
+```python
+start_station = "SOL"
+start_index = nodes.index(start_station)
+
+hops_bfs, prev_nodes_bfs = bfs(graph, start_index)
+
+print(f"========= BFS ALGORITHM =========")
+print(f"Start Station (Source): {start_station}")
+print(f"{'Destination':<16} | {'Stops':<10} | {'Rute'}")
+print("-" * 60)
+
+for i in range(len(nodes)):
+    if i == start_index: continue
+
+    h = hops_bfs[i]
+    if h != inf:
+        path = get_path_bfs(prev_nodes_bfs, nodes, start_index, i)
+        print(f"{nodes[i]:<16} | {h:<10} | {path}")
+    else:
+        print(f"{nodes[i]:<16} | {'-':<10} | Tidak Terjangkau")
+```
+
+- Sets **Solo** as the source.
+- Runs BFS once.
+- Prints, for every destination:
+  - Station code.
+  - Number of **stops/hops** from Solo.
+  - Path (sequence of station codes).
+
+BFS is basically answering:  
+> “From Solo, what is the route with the **fewest station transitions**, no matter how far it is in km?”
+
+---
+
+## 3. DIJKSTRA.py – Dijkstra’s Algorithm (Shortest Distance from Solo)
+
+### 3.1 Purpose
+
+- This implementation finds the **shortest total distance (in km)** from **Solo (`SOL`)** to **all other stations** using the same adjacency matrix `graph`.
+- Now the numeric values in `graph[i][j]` are crucial as edge weights.
+
+---
+
+### 3.2 `dijkstra(graph, start_node_index)`
 
 ```python
 def dijkstra(graph, start_node_index):
@@ -117,210 +323,99 @@ def dijkstra(graph, start_node_index):
     Implementation of Dijkstra's Algorithm using an Adjacency Matrix.
     """
     num_nodes = len(graph)
-    
-    # Initialize "memory" arrays
+
     distances = [inf] * num_nodes
     visited = [False] * num_nodes
     previous_nodes = [-1] * num_nodes
 
     distances[start_node_index] = 0
-``
 
-- `num_nodes` = total number of stations.
-- `distances[i]` = **current best known distance** from the start station to station `i`.
-- `visited[i]` = True if station `i` has already been “finalized” by the algorithm.
-- `previous_nodes[i]` = **parent station** on the shortest path to `i`.
-- Distance from start station to itself is 0.
-
-#### Main Loop
-
-```python
     for _ in range(num_nodes):
-        # 1. Pick the unvisited node with smallest distance
+        # 1. Pick the unvisited node with smallest current distance
         min_dist = inf
         u = -1
-
         for i in range(num_nodes):
             if not visited[i] and distances[i] < min_dist:
                 min_dist = distances[i]
                 u = i
 
         if u == -1:
-            break
+            break   # no more reachable nodes
 
-        # 2. Mark that node as visited
+        # 2. Mark node u as visited
         visited[u] = True
-```
-## Overview
 
-This function is the core of Dijkstra’s algorithm that works on a **graph represented as an adjacency matrix** and a given **start node** (start station). It computes the shortest path distances from the start node to all other nodes.
-
----
-
-## Variable Initialization
-
-- `num_nodes = len(graph)`  
-  Counts how many nodes (stations) there are in the graph.
-
-- `distances = [inf] * num_nodes`  
-  Creates an array that stores the **current shortest known distance** from the start node to every other node.  
-  At the beginning, all values are set to infinity (`inf`) because no paths are known yet.
-
-- `visited = [False] * num_nodes`  
-  Keeps track of which nodes have been **“finalized”** by the algorithm (i.e., nodes whose shortest distance has already been confirmed).
-
-- `previous_nodes = [-1] * num_nodes`  
-  Stores the **previous node** on the shortest path for each node.  
-  This is later used to reconstruct the actual path (by backtracking from the destination back to the start).
-
-- `distances[start_node_index] = 0`  
-  The distance from the start node to itself is **0**, so this becomes our starting point.
-
-## Main Loop Logic
-
-### 1. Iteration Over All Nodes
-
-The outer loop `for _ in range(num_nodes):` runs up to `num_nodes` times.  
-In each iteration, the algorithm tries to **finalize one more node** (confirm its shortest distance).
-
-### 2. Selecting the Next Node `u`
-
-Inside the loop, we search for the node `u` that:
-
-- has **not** been visited yet (`not visited[i]`), and  
-- has the **smallest current distance** in the `distances` array (`distances[i] < min_dist`).
-
-This is done by scanning all nodes and keeping track of the smallest distance found so far.
-
-If, after checking all nodes, no suitable node is found (`u == -1`), it means **there are no more reachable unvisited nodes**. In that case, the algorithm stops early with `break`.
-
-### 3. Finalizing Node `u`
-
-Once node `u` is selected, we execute:
-
-```python
-visited[u] = True
-```
-
-This marks node `u` as **visited/finalized**.  
-At this point, the shortest distance to `u` is considered **fixed**, and in the next part of the algorithm (not shown here), we would:
-
-- Look at all neighbors of `u`, and  
-- Try to **relax/update** their distances using the path that goes through `u`.
-
-This is how Dijkstra’s algorithm gradually expands the set of nodes whose shortest distances from the start node are known with certainty.
-
----
-
-#### Relaxation Step (Updating Neighbors)
-
-```python
-        # 3. Relax neighbors of u
+        # 3. Relax edges from u
         for v in range(num_nodes):
+            # if there is a connection and v not visited
             if graph[u][v] > 0 and not visited[v]:
                 new_dist = distances[u] + graph[u][v]
                 if new_dist < distances[v]:
                     distances[v] = new_dist
                     previous_nodes[v] = u
-```
 
-For every neighbor `v` of station `u`:
-
-- `graph[u][v] > 0` means there is a direct track from `u` to `v`.
-- The algorithm calculates a **new possible distance**:
-  ```python
-  new_dist = distances[u] + graph[u][v]
-  ```
-  (distance from start → u → v)
-- If this new distance is **shorter** than the previous value in `distances[v]`,
-  it **updates**:
-  - `distances[v]` to `new_dist`
-  - `previous_nodes[v]` to `u`, meaning:
-    > “The best path to get to station `v` currently goes through station `u`.”
-
-At the end, the function returns:
-
-```python
     return distances, previous_nodes
 ```
 
-- `distances`  → shortest distance from the start to every station.  
-- `previous_nodes` → information needed to rebuild the actual routes.
+Key ideas:
+
+- `distances[i]`: current best known **distance in km** from Solo to station `i`.
+- `visited[i]`: whether the shortest path to `i` is already finalized.
+- In each iteration:
+  1. Choose unvisited node `u` with minimal `distances[u]`.
+  2. Mark it visited.
+  3. For each neighbor `v`, try to improve `distances[v]` using the edge `u → v`:
+     - `new_dist = distances[u] + graph[u][v]`.
+     - If `new_dist` is smaller, update `distances[v]` and set `previous_nodes[v] = u`.
+
+This is the classic **single-source shortest path** algorithm for non-negative weights.
 
 ---
 
-## 3. Reconstructing Paths
-
-### 3.1 `get_path(previous_nodes, node_names, start_index, end_index)`
+### 3.3 `get_path(previous_nodes, node_names, start_index, end_index)`
 
 ```python
 def get_path(previous_nodes, node_names, start_index, end_index):
-    """
-    Helper function to reconstruct the path from the 'previous_nodes' array.
-    """
     path = []
     current_index = end_index
-    
-    # Trace back from 'end' to 'start'
+
     while current_index != -1:
         path.append(node_names[current_index])
         current_index = previous_nodes[current_index]
-    
+
     path.reverse()
-    
+
     if path[0] == node_names[start_index]:
         return " -> ".join(path)
     else:
         return "No path"
 ```
 
-What this function does:
-
-1. Start from the **destination station** (`end_index`).
-2. Use `previous_nodes` to walk **backwards**:
-   - from BL → ML → LW → BG → SDA → WO → SGU, for example.
-3. Collect all station codes in a list `path`.
-4. Reverse the list so that it becomes:
-   - SGU → WO → SDA → BG → LW → ML → BL
-5. Join them with `" -> "` to produce a human-readable route string:
-   - `"SGU -> WO -> SDA -> BG -> LW -> ML -> BL"`
-
-If the path does not start with the original start station, it returns `"No path"`.
-
-This is how the code turns the algorithm’s internal memory into a clear route
-that matches the lines on your station map.
+Exactly the same idea as in BFS, but now the `previous_nodes` came from **Dijkstra’s relaxation**.
 
 ---
 
-## 4. Main Program Flow
+### 3.4 Main Program
 
 ```python
-start_station = "SGU"
+start_station = "SOL"
 start_index = nodes.index(start_station)
 
 distances, prev_nodes = dijkstra(graph, start_index)
-```
 
-- The program chooses **St. Gubeng (SGU)** as the **source station**.
-- It finds the index of `"SGU"` in the `nodes` list.
-- It runs `dijkstra` to compute:
-  - `distances` from SGU to all other stations.
-  - `prev_nodes` used later to reconstruct each route.
-
-### 4.1 Printing the Results
-
-```python
-print(f"========= DIJKSTRA'S ALGORITHM RESULTS =========\n")
-print(f"Start Station (Source): {start_station}\n")
+print(f"========= DIJKSTRA'S ALGORITHM RESULTS =========
+")
+print(f"Start Station (Source): {start_station}
+")
 print(f"{'Destination':<16} | {'Shortest Distance (km)':<22} | {'Shortest Path':<40}")
 print("-" * 80)
 
 for i in range(len(nodes)):
     if i == start_index:
-        continue  # Skip the start station
+        continue
 
     distance = distances[i]
-    
+
     if distance == inf:
         print(f"{nodes[i]:<16} | {'Not Reachable':<22} | -")
     else:
@@ -328,36 +423,155 @@ for i in range(len(nodes)):
         print(f"{nodes[i]:<16} | {distance:<22.1f} | {path_str}")
 ```
 
-For each station:
+Now the output table shows, for each station:
 
-- If the distance is `inf`, there is **no route** from SGU to that station.
-- Otherwise:
-  - It prints the **shortest distance** (total km).
-  - It calls `get_path` to show the **exact sequence of stations**.
+- The **shortest distance in km** from Solo.
+- The **shortest path** in terms of that distance.
 
-Example of one row (conceptually):
-
-- From SGU to ML:  
-  `SGU -> WO -> SDA -> BG -> LW -> ML`  
-  The total distance is the sum of all segments in the map:
-  - SGU–WO (5.8)  
-  - WO–SDA (17.6)  
-  - SDA–BG (21.5)  
-  - BG–LW (40.5)  
-  - LW–ML (18.6)  
-  → The algorithm adds exactly these values, just like you would by hand.
+So Dijkstra is answering:  
+> “From Solo, what is the **shortest-distance route** to every other station?”
 
 ---
 
-## 5. Relation to the Station Map
+## 4. FLOYD–WARSHALL.py – Floyd–Warshall (All-Pairs Shortest Paths)
 
-- The **nodes list** is the list of houses (stations) on the visualisation.
-- The **adjacency matrix** is the table version of all the black lines and numbers.
-- **Dijkstra’s algorithm** is basically a “smart traveler” starting at SGU
-  and exploring the network, always expanding from the currently closest station.
-- The final output table tells you, for every station on the map:
-  1. how far it is from SGU in km, and  
-  2. which route (sequence of stations) you should follow to get the **shortest total distance**.
+### 4.1 Purpose
+
+- Instead of just Solo → all, Floyd–Warshall computes the **shortest paths between every pair of stations**.
+- The code then prints one “row” of this result: **all shortest paths starting from Solo (`SOL`)**.
 
 ---
 
+### 4.2 Initialization of `dist` and `next_node`
+
+```python
+n = len(stations)
+INF = float('inf')
+
+dist      = [[INF] * n for _ in range(n)]
+next_node = [[None] * n for _ in range(n)]
+
+for i in range(n):
+    dist[i][i] = 0
+    next_node[i][i] = i
+```
+
+- `dist[i][j]`: current best known **shortest distance** between `stations[i]` and `stations[j]`.
+- `next_node[i][j]`: the **next node to go to** from `i` on the shortest path to `j`.
+
+After this, the code inserts all **direct edges** (see section 1.3).
+
+---
+
+### 4.3 Floyd–Warshall Core Algorithm
+
+```python
+for k in range(n):
+    for i in range(n):
+        for j in range(n):
+            if dist[i][k] + dist[k][j] < dist[i][j]:
+                dist[i][j] = dist[i][k] + dist[k][j]
+                next_node[i][j] = next_node[i][k]
+```
+
+Interpretation:
+
+- Try every station `k` as a possible **intermediate hub** between `i` and `j`.
+- If route `i → k → j` is shorter than the current `i → j`, update:
+  - `dist[i][j]` to this new smaller value.
+  - `next_node[i][j]` to the first step on the path to `k`.
+
+After this triple loop:
+
+- `dist` holds **shortest distances between every pair of stations**.
+- `next_node` allows reconstructing **any shortest path**.
+
+---
+
+### 4.4 Path Reconstruction – `get_path(start, end)`
+
+```python
+def get_path(start, end):
+    if next_node[start][end] is None:
+        return None
+    path = [start]
+    while start != end:
+        start = next_node[start][end]
+        path.append(start)
+    return path
+```
+
+- Input: `start`, `end` are **indices** in the `stations` list.
+- If `next_node[start][end]` is `None`, there is **no path**.
+- Otherwise, repeatedly jump from `start` to `next_node[start][end]` until `end` is reached.
+- Returns a list like `[15, 16, 17, 18]` which corresponds to e.g. `["SOL", "SRW", "MDN", "NGK"]`.
+
+---
+
+### 4.5 Printing All Shortest Paths from Solo – `print_all_shortest_paths`
+
+```python
+def print_all_shortest_paths(start_station):
+
+    start = stations.index(start_station)
+    print(f"Start Station (Source): {start_station}
+")
+
+    print(f"{'Destination':<12} | {'Shortest Distance (km)':<22} | Shortest Path")
+    print("-" * 75)
+
+    for end in range(n):
+        if end == start:
+            continue
+
+        path_idx = get_path(start, end)
+        if path_idx is None:
+            distance = "∞"
+            path_str = "No path"
+        else:
+            distance = round(dist[start][end], 1)
+            path_str = " -> ".join(stations[i] for i in path_idx)
+
+        print(f"{stations[end]:<12} | {distance:<22} | {path_str}")
+```
+
+At the bottom:
+
+```python
+print_all_shortest_paths("SOL")
+```
+
+So in this run, Floyd–Warshall is basically used to answer:  
+> “What are the shortest distances and routes from Solo to all other stations,  
+> **assuming we already computed shortest paths for all pairs**?”
+
+---
+
+## 5. Overall Conclusion – Which Algorithm is Most Effective?
+
+Based on the **same station dataset** and **start node Solo (`SOL`)**:
+
+1. **BFS**  
+   - Uses the adjacency matrix but treats every track as **equal cost**.  
+   - It returns routes with the **minimum number of stations (hops)**.  
+   - Good when the goal is **minimize transfers**, not distance.  
+   - Not suitable if you care about **km or travel time**.
+
+2. **Dijkstra**  
+   - Uses the same adjacency matrix, but now fully uses the **distance values (km)**.  
+   - Computes the **shortest-distance routes from Solo to all other stations** in one run.  
+   - Time complexity with adjacency matrix: about `O(V²)`, which is very efficient for 26 stations.  
+   - This is the most **practical and effective algorithm** for a **Solo-centric routing app**.
+
+3. **Floyd–Warshall**  
+   - Builds on an edge list but represents the same railway network.  
+   - Computes **shortest distances for every possible pair of stations** (all-pairs shortest paths) in `O(V³)`.  
+   - More expensive than Dijkstra for one source, but very powerful for **global analysis**: any station can be origin or destination without re-running an algorithm.
+
+---
+
+- For this project where the main task is:  
+  **“Find the best routes from Solo to all stations in the network”**,  
+  **Dijkstra’s algorithm is the most effective and appropriate choice** (distance-based, reasonably fast, and directly matches the passenger’s need).
+- **BFS** is useful as a complementary view when you want **routes with minimum transfers**.
+- **Floyd–Warshall** is best reserved for scenarios where you need **all-pairs shortest path information** (e.g., network planning, timetable optimization, or simulation), not just paths from Solo.
