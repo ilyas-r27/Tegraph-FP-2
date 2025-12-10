@@ -55,7 +55,8 @@ graph = [
 
 ### 1.1 Station List
 
-In **BFS.py** and **DIJKSTRA.py**:
+<img width="613" height="288" alt="image" src="https://github.com/user-attachments/assets/e3aaedca-396a-4afd-a89d-8897e3e7606c" />
+
 
 ```python
 nodes = [
@@ -65,15 +66,7 @@ nodes = [
 ]
 ```
 
-In **FLOYD–WARSHALL.py** the list is named:
 
-```python
-stations = [
-    "SGU", "WO", "SDA", "BG", "LW", "ML", "MR", "KTS", "KD", "BL",
-    "CN", "PWT", "KRO", "KLG", "YGY", "SOL", "SRW",
-    "MDN", "NGK", "SMG", "PK", "TGL", "CKR", "PSE", "BDG", "KTG"
-]
-```
 
 - **Index in the list = ID of the station** in all matrices.  
 - For example, in all three codes, `"SOL"` is one element in this list and its index is used as the **start node**.
