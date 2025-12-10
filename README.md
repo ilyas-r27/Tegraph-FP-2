@@ -46,7 +46,7 @@ graph = [
 
 ```
 
-# Code Explanation – BFS, Dijkstra, and Floyd–Warshall  
+# Explanation – BFS, Dijkstra, and Floyd–Warshall  
 *(Based on the Java Station Dataset, starting from Solo – `SOL`)*
 
 ---
