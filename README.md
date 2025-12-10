@@ -53,8 +53,6 @@ graph = [
 
 ## 1. Shared Data Model (Station Dataset)
 
-All three files use the **same logical dataset**: a railway network in Java with 26 stations.
-
 ### 1.1 Station List
 
 In **BFS.py** and **DIJKSTRA.py**:
