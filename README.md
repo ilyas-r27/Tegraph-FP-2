@@ -69,14 +69,33 @@ nodes = [
 
 Each string is a **station code**, for example:
 
-- `SOL` = Solo  
-- `YGY` = Yogyakarta  
-- `SMG` = Semarang  
-- `PSE` = Jakarta  
-- `BDG` = Bandung  
-- etc.
-
-In the Floyd–Warshall code, these are called `stations`, but the contents are the same list.
+- **SGU** – Stasiun Surabaya Gubeng  
+- **WO** – Stasiun Wonokromo  
+- **SDA** – Stasiun Sidoarjo  
+- **BG** – Stasiun Bangil  
+- **LW** – Stasiun Lawang  
+- **ML** – Stasiun Malang  
+- **MR** – Stasiun Mojokerto  
+- **KTS** – Stasiun Kertosono  
+- **KD** – Stasiun Kediri  
+- **BL** – Stasiun Blitar  
+- **CN** – Stasiun Cirebon  
+- **PWT** – Stasiun Purwokerto  
+- **KRO** – Stasiun Kroya  
+- **KLG** – Stasiun Kutoarjo  
+- **YGY** – Stasiun Yogyakarta  
+- **SOL** – Stasiun Solo (Surakarta)  
+- **SRW** – Stasiun Sragen  
+- **MDN** – Stasiun Madiun  
+- **NGK** – Stasiun Nganjuk  
+- **SMG** – Stasiun Semarang  
+- **PK** – Stasiun Pekalongan  
+- **TGL** – Stasiun Tegal  
+- **CKR** – Stasiun Cikarang  
+- **PSE** – Stasiun Pasar Senen (Jakarta)  
+- **BDG** – Stasiun Bandung
+- **KTG** – Stasiun Ketapang (Banyuwangi)
+  
 
 ### 1.2 Adjacency Matrix (`graph`)
 
